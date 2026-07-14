@@ -1,0 +1,41 @@
+# Self-tests for examples/packs/pii-basics.yaml.
+# Run with:  handrail test --pack examples/packs/pii-basics.yaml examples/cases/pii-basics.cases.yaml
+cases:
+  - name: clean text passes
+    input: The quarterly report is attached.
+    expect:
+      decision: pass
+      rules: []
+
+  - name: email is redacted
+    input: Contact sam@example.test for details.
+    expect:
+      decision: redact
+      rules: [email-address]
+
+  - name: card number blocks even with spaces
+    input: "Card: 4111 1111 1111 1111"
+    expect:
+      decision: block
+      rules: [credit-card]
+
+  - name: cloud key blocks on the way out
+    stage: post
+    input: export ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+    expect:
+      decision: block
+      rules: [aws-access-key]
+
+  - name: pem header blocks
+    input: |
+      -----BEGIN RSA PRIVATE KEY-----
+      not actually a key
+    expect:
+      decision: block
+      rules: [private-key-block]
+
+  - name: phone number is masked
+    input: call +14155550123 tomorrow
+    expect:
+      decision: redact
+      rules: [phone-e164]

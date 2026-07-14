@@ -1,0 +1,56 @@
+# pii-basics — mask personal data and block leaked credentials on both
+# sides of the model boundary. Every rule is plain regex or a threshold:
+# reviewable line by line, no classifier involved.
+pack: pii-basics
+version: "1.0"
+description: Mask personal data and block leaked credentials, pre and post
+rules:
+  - id: email-address
+    kind: regex
+    stage: both
+    action: redact
+    severity: high
+    message: email address in payload
+    pattern: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+    replacement: "[EMAIL]"
+
+  - id: phone-e164
+    kind: regex
+    stage: both
+    action: redact
+    severity: medium
+    message: international phone number in payload
+    pattern: '\+[1-9][0-9]{7,14}\b'
+
+  - id: credit-card
+    kind: regex
+    stage: both
+    action: block
+    severity: critical
+    message: possible payment card number
+    pattern: '\b(?:[0-9][ -]?){12,18}[0-9]\b'
+
+  - id: aws-access-key
+    kind: regex
+    stage: both
+    action: block
+    severity: critical
+    message: cloud access key id
+    pattern: '\bAKIA[0-9A-Z]{16}\b'
+
+  - id: private-key-block
+    kind: regex
+    stage: both
+    action: block
+    severity: critical
+    message: PEM private key material
+    pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+
+  - id: high-entropy-blob
+    kind: threshold
+    stage: both
+    action: flag
+    severity: low
+    message: unusually high entropy; possible encoded secret
+    metric: shannon_entropy
+    max: 5.2

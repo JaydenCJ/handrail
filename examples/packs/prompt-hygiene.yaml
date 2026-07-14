@@ -1,0 +1,50 @@
+# prompt-hygiene — pre-flight checks for inbound prompts: injection
+# phrasing, internal codenames, and cheap structural thresholds.
+pack: prompt-hygiene
+version: "1.0"
+description: Pre-flight hygiene checks for inbound prompts
+rules:
+  - id: injection-phrases
+    kind: lexicon
+    stage: pre
+    action: block
+    severity: high
+    message: known prompt-injection phrasing
+    terms_file: ../lexicons/injection-phrases.txt
+    match: substring
+
+  - id: internal-codenames
+    kind: lexicon
+    stage: both
+    action: redact
+    severity: medium
+    message: internal project codename
+    terms: [bluebird, "operation nimbus", skyhook-7]
+    replacement: "[CODENAME]"
+
+  - id: prompt-too-long
+    kind: threshold
+    stage: pre
+    action: block
+    severity: medium
+    message: prompt exceeds the 8000-character budget
+    metric: chars
+    max: 8000
+
+  - id: too-many-links
+    kind: threshold
+    stage: pre
+    action: flag
+    severity: low
+    message: many URLs in one prompt; possible exfiltration staging
+    metric: urls
+    max: 5
+
+  - id: char-flood
+    kind: threshold
+    stage: pre
+    action: block
+    severity: medium
+    message: repeated-character flood
+    metric: repeated_char_run
+    max: 200

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="400" viewBox="0 0 720 400" font-family="Menlo, Consolas, monospace" font-size="14" xml:space="preserve">
+  <rect width="720" height="400" rx="10" fill="#101418"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f56"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#27c93f"/>
+  <text x="360" y="27" fill="#8b949e" text-anchor="middle" font-size="12">handrail — deterministic guardrails from YAML rule packs</text>
+  <g fill="#c9d1d9">
+    <text x="24" y="62"><tspan fill="#7ee787">$</tspan> handrail check --pack pii-basics.yaml payload.txt</text>
+    <text x="24" y="94">pack:   <tspan fill="#79c0ff">pii-basics v1.0</tspan> (6 rules)</text>
+    <text x="24" y="114">stage:  pre</text>
+    <text x="24" y="134">input:  76 bytes</text>
+    <text x="24" y="168" fill="#d2a8ff">findings (3)</text>
+    <text x="24" y="192">  <tspan fill="#ffa657">REDACT</tspan>  high      email-address            16..32  <tspan fill="#8b949e">"sam@example.test"</tspan></text>
+    <text x="24" y="212" fill="#8b949e">          email address in payload</text>
+    <text x="24" y="236">  <tspan fill="#ffa657">REDACT</tspan>  medium    phone-e164               36..48  <tspan fill="#8b949e">"+14155550123"</tspan></text>
+    <text x="24" y="256" fill="#8b949e">          international phone number in payload</text>
+    <text x="24" y="280">  <tspan fill="#f85149">BLOCK</tspan>   critical  credit-card              56..75  <tspan fill="#8b949e">"4111 1111 1111 1111"</tspan></text>
+    <text x="24" y="300" fill="#8b949e">          possible payment card number</text>
+    <text x="24" y="334">decision: <tspan fill="#f85149">block</tspan> (1 block, 2 redact)</text>
+    <text x="24" y="366"><tspan fill="#7ee787">$</tspan> echo $?   <tspan fill="#8b949e"># 1 — same input, same verdict, on every machine</tspan></text>
+  </g>
+</svg>
